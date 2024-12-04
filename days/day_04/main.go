@@ -41,7 +41,7 @@ func check1(arg [][]string, x int, y int) int {
 		currX := x
 		currY := y
 		for _, char := range ref {
-			if currX < 0 || currY < 0 || currX >= len(arg) || currY >= len(arg[0]) {
+			if !checkBound(arg, currX, currY) {
 				found = false
 				break
 			}
@@ -98,11 +98,15 @@ func check2(arg [][]string, x int, y int) bool {
 	return checkPair(arg, x-1, y-1, x+1, y+1) && checkPair(arg, x+1, y-1, x-1, y+1)
 }
 func checkPair(arg [][]string, x int, y int, xx int, yy int) bool {
-	if x < 0 || y < 0 || x >= len(arg) || y >= len(arg[0]) {
-		return false
-	}
-	if xx < 0 || yy < 0 || xx >= len(arg) || yy >= len(arg[0]) {
+	if !(checkBound(arg, x, y) && checkBound(arg, xx, yy)) {
 		return false
 	}
 	return (arg[x][y] == "S" && arg[xx][yy] == "M") || (arg[x][y] == "M" && arg[xx][yy] == "S")
+}
+
+func checkBound(arg [][]string, x int, y int) bool {
+	if x < 0 || y < 0 || x >= len(arg) || y >= len(arg[0]) {
+		return false
+	}
+	return true
 }
