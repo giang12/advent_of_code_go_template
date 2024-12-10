@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/emirpasic/gods/stacks/arraystack"
+	"github.com/emirpasic/gods/v2/stacks/arraystack"
 )
 
 // Run function of the daily challenge
@@ -57,13 +57,12 @@ func count(grid [][]int, r int, c int, uniqPath bool) int {
 	for i := range mem {
 		mem[i] = make([]bool, len(grid[0]))
 	}
-	stack := arraystack.New() // empty
-	stack.Push([2]int{r, c})  // 1
+	stack := arraystack.New[[2]int]() // empty
+	stack.Push([2]int{r, c})          // 1
 	mem[r][c] = true
 	total := 0
 	for !stack.Empty() {
-		item, _ := stack.Pop()
-		curr := item.([2]int)
+		curr, _ := stack.Pop()
 		if grid[curr[0]][curr[1]] == 9 {
 			total++
 			continue

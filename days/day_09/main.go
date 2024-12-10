@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/emirpasic/gods/sets/treeset"
+	"github.com/emirpasic/gods/v2/sets/treeset"
 )
 
 // Run function of the daily challenge
@@ -18,11 +18,11 @@ func Run(input []string, mode int) {
 		fmt.Printf("Part two: %v\n", Part2(input))
 	}
 }
-func parseInput(input []string) (arr []int, available_spaces treeset.Set, used_spaces []Space, maxID int) {
+func parseInput(input []string) (arr []int, available_spaces treeset.Set[Space], used_spaces []Space, maxID int) {
 	freeSpace := false
 	maxID = -1
 	arr = make([]int, 0)
-	available_spaces = *treeset.NewWith(bySpace) // empty (keys are of type int)
+	available_spaces = *treeset.NewWith[Space](bySpace) // empty (keys are of type int)
 	used_spaces = make([]Space, 0)
 	for _, s := range input {
 		cnt := util.Atoi(s)
@@ -100,7 +100,7 @@ func Part2(input []string) string {
 }
 
 // segment tree??
-func rearrage2(arr []int, available_spaces treeset.Set, used_spaces []Space, maxID int) {
+func rearrage2(arr []int, available_spaces treeset.Set[Space], used_spaces []Space, maxID int) {
 	// fmt.Printf("maxID=%v\n", maxID)
 	// fmt.Println(available_spaces.String())
 	// fmt.Println(used_spaces)
@@ -114,15 +114,13 @@ func rearrage2(arr []int, available_spaces treeset.Set, used_spaces []Space, max
 		// fmt.Println(arr)
 	}
 }
-func compact(arr []int, available_spaces treeset.Set, currSpace Space) {
-	_, foundValue := available_spaces.Find(func(index int, value interface{}) bool {
-		c1 := value.(Space)
+func compact(arr []int, available_spaces treeset.Set[Space], currSpace Space) {
+	index, freeSpace := available_spaces.Find(func(index int, c1 Space) bool {
 		return (c1.available_space() >= currSpace.available_space())
 	})
-	if foundValue == nil {
+	if index < 0 {
 		return
 	}
-	freeSpace := foundValue.(Space)
 	if freeSpace.start <= currSpace.start {
 		available_spaces.Remove(freeSpace)
 		for i := 0; i < currSpace.available_space(); i++ {
@@ -200,11 +198,11 @@ func (m Space) available_space() int {
 }
 
 // Custom comparator (sort by IDs)
-func bySpace(a, b interface{}) int {
+func bySpace(c1, c2 Space) int {
 
 	// Type assertion, program will panic if this is not respected
-	c1 := a.(Space)
-	c2 := b.(Space)
+	// c1 := a.(Space)
+	// c2 := b.(Space)
 
 	if c1.available_space() == c2.available_space() {
 		return c1.start - c2.start
