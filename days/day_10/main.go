@@ -44,10 +44,10 @@ func Part1(input []string) string {
 	defer util.Timer()()
 	grid, startNodes := parseInput(input)
 
-	total := 0
-	for _, inital := range startNodes {
-		total += count(grid, inital, true)
-	}
+	total := util.Reduce(startNodes, func(currentVal int, currentItem [2]int) int {
+		return currentVal + count(grid, currentItem, false)
+	}, 0)
+
 	return strconv.Itoa(total)
 }
 
@@ -57,10 +57,10 @@ func Part2(input []string) string {
 
 	grid, startNodes := parseInput(input)
 
-	total := 0
-	for _, inital := range startNodes {
-		total += count(grid, inital, false)
-	}
+	total := util.Reduce(startNodes, func(currentVal int, currentItem [2]int) int {
+		return currentVal + count(grid, currentItem, false)
+	}, 0)
+
 	return strconv.Itoa(total)
 }
 
