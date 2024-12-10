@@ -41,11 +41,25 @@ func parseInput(input []string) (grid [][]int, startNodes [][2]int) {
 
 // Part1 solves the first part of the exercise
 func Part1(input []string) string {
+	defer util.Timer()()
 	grid, startNodes := parseInput(input)
 
 	total := 0
 	for _, inital := range startNodes {
 		total += count(grid, inital[0], inital[1], true)
+	}
+	return strconv.Itoa(total)
+}
+
+// Part2 solves the second part of the exercise
+func Part2(input []string) string {
+	defer util.Timer()()
+
+	grid, startNodes := parseInput(input)
+
+	total := 0
+	for _, inital := range startNodes {
+		total += count(grid, inital[0], inital[1], false)
 	}
 	return strconv.Itoa(total)
 }
@@ -57,41 +71,33 @@ func count(grid [][]int, r int, c int, uniqPath bool) int {
 	for i := range mem {
 		mem[i] = make([]bool, len(grid[0]))
 	}
-	stack := arraystack.New[[2]int]() // empty
-	stack.Push([2]int{r, c})          // 1
-	mem[r][c] = true
+	stack := *arraystack.New[[2]int]() // empty
+	visit([2]int{r, c}, mem, stack)
 	total := 0
 	for !stack.Empty() {
-		curr, _ := stack.Pop()
-		if grid[curr[0]][curr[1]] == 9 {
-			total++
-			continue
-		}
-		for _, d := range DIRS {
-			nextR := curr[0] + d[0]
-			nextC := curr[1] + d[1]
-			if nextR < 0 || nextC < 0 || nextR >= len(grid) || nextC >= len(grid[0]) {
-				continue
-			}
-			if uniqPath && mem[nextR][nextC] {
-				continue
-			}
-			if grid[nextR][nextC]-grid[curr[0]][curr[1]] == 1 {
-				mem[nextR][nextC] = true
-				stack.Push([2]int{nextR, nextC})
-			}
-		}
+		currLocation, _ := stack.Pop()
+		total += util.Ternary(grid[currLocation[0]][currLocation[1]] == 9, 1, 0)
+		explore(grid, currLocation, uniqPath, mem, stack)
 	}
 	return total
 }
 
-// Part2 solves the second part of the exercise
-func Part2(input []string) string {
-	grid, startNodes := parseInput(input)
-
-	total := 0
-	for _, inital := range startNodes {
-		total += count(grid, inital[0], inital[1], false)
+func explore(grid [][]int, currLocation [2]int, uniqPath bool, mem [][]bool, stack arraystack.Stack[[2]int]) {
+	for _, d := range DIRS {
+		nextR := currLocation[0] + d[0]
+		nextC := currLocation[1] + d[1]
+		if nextR < 0 || nextC < 0 || nextR >= len(grid) || nextC >= len(grid[0]) {
+			continue
+		}
+		if uniqPath && mem[nextR][nextC] {
+			continue
+		}
+		if grid[nextR][nextC]-grid[currLocation[0]][currLocation[1]] == 1 {
+			visit([2]int{nextR, nextC}, mem, stack)
+		}
 	}
-	return strconv.Itoa(total)
+}
+func visit(location [2]int, mem [][]bool, stack arraystack.Stack[[2]int]) {
+	mem[location[0]][location[1]] = true
+	stack.Push(location) // 1
 }
