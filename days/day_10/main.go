@@ -46,7 +46,7 @@ func Part1(input []string) string {
 
 	total := 0
 	for _, inital := range startNodes {
-		total += count(grid, inital[0], inital[1], true)
+		total += count(grid, inital, true)
 	}
 	return strconv.Itoa(total)
 }
@@ -59,20 +59,20 @@ func Part2(input []string) string {
 
 	total := 0
 	for _, inital := range startNodes {
-		total += count(grid, inital[0], inital[1], false)
+		total += count(grid, inital, false)
 	}
 	return strconv.Itoa(total)
 }
 
 var DIRS = [4][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
 
-func count(grid [][]int, r int, c int, uniqPath bool) int {
+func count(grid [][]int, start [2]int, uniqPath bool) int {
 	mem := make([][]bool, len(grid))
 	for i := range mem {
 		mem[i] = make([]bool, len(grid[0]))
 	}
 	stack := *arraystack.New[[2]int]() // empty
-	visit([2]int{r, c}, mem, stack)
+	visit(start, mem, stack)
 	total := 0
 	for !stack.Empty() {
 		currLocation, _ := stack.Pop()
