@@ -45,7 +45,7 @@ func Part1(input []string) string {
 	grid, startNodes := parseInput(input)
 
 	total := util.Reduce(startNodes, func(currentVal int, currentItem [2]int) int {
-		return currentVal + count(grid, currentItem, false)
+		return currentVal + count(grid, currentItem, true)
 	}, 0)
 
 	return strconv.Itoa(total)
